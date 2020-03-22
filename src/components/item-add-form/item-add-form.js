@@ -29,7 +29,6 @@ class ItemAddForm extends Component {
   };
 
   render() {
-    const { addItem } = this.props;
     const { label } = this.state;
 
     return (

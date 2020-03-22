@@ -2,33 +2,31 @@ import React, { Component } from 'react';
 
 class ItemStatusFilter extends Component {
 
-  buttonActive = () => {
-  }
+  buttons = [
+    { name: 'all', label: 'All'},
+    { name: 'active', label: 'Active'},
+    { name: 'done', label: 'Done'},
+  ];
 
   render() {
-
-    const { onTodoAll, onTodoActive, onTodoDone, buttonAll, buttonActive, buttonDone } = this.props;
-
-    let classNames = 'btn btn-outline-secondary';
-    let classNamesActive = 'btn btn-info';
+    const { filter, onFilterChange } = this.props;
+    const buttons = this.buttons.map(({ name, label}) => {
+      const isActive = filter === name;
+      const clazz = isActive ? 'btn-info' : 'btn-outline-secondary';
+      
+      return (
+        <button type="button"
+                className={`btn ${clazz}`}
+                key={name}
+                onClick={ () => onFilterChange(name) }>
+          { label }
+        </button>
+      );
+    });
 
     return (
-      <div className="btn-group" role="group" aria-label="Basic example">
-          <button type="button" 
-                  className={ buttonAll ? classNamesActive : classNames }
-                  onClick={ onTodoAll }>
-            All
-          </button>
-          <button type="button" 
-                  className={ buttonActive ? classNamesActive : classNames }
-                  onClick={ onTodoActive }>
-            Active
-          </button>
-          <button type="button" 
-                  className={ buttonDone ? classNamesActive : classNames }
-                  onClick={ onTodoDone }>
-            Done
-          </button>
+      <div className="btn-group">
+        { buttons }
       </div>
     );
   };

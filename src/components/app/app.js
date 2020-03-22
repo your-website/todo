@@ -17,14 +17,8 @@ class App extends Component {
       this.createTodoItem('Make Awesome App'),
       this.createTodoItem('Have a lunch'),
     ],
-    beforeData: [
-      this.createTodoItem('Drink Coffee'),
-      this.createTodoItem('Make Awesome App'),
-      this.createTodoItem('Have a lunch'),
-    ],
-    buttonAll: true,
-    buttonActive: false,
-    buttonDone: false
+    term: '',
+    filter: 'all'
   };
 
   createTodoItem(label) {
@@ -46,7 +40,6 @@ class App extends Component {
       const newArray = [...before, ...after];
 
       return {
-        beforeData: newArray,
         todoData: newArray
       };
     });
@@ -55,11 +48,10 @@ class App extends Component {
   addItem = (text) => {
     const newItem = this.createTodoItem(text);
 
-    this.setState(({ beforeData }) => {
-      const newArray = [...beforeData, newItem];
+    this.setState(({ todoData }) => {
+      const newArray = [...todoData, newItem];
 
       return {
-        beforeData: newArray,
         todoData: newArray
       };
     });
@@ -78,97 +70,72 @@ class App extends Component {
   };
 
   onToggleImportant = (id) => {
-    this.setState(({ todoData, beforeData }) => {
+    this.setState(({ todoData }) => {
       return {
-        beforeData: this.toggleProperty(beforeData, id, 'important'),
         todoData: this.toggleProperty(todoData, id, 'important')
       };
     });
   };
 
   onToggleDone = (id) => {
-    this.setState(({ todoData, beforeData }) => {
+    this.setState(({ todoData }) => {
       return {
-        beforeData: this.toggleProperty(beforeData, id, 'done'),
         todoData: this.toggleProperty(todoData, id, 'done')
       };
     });
   };
 
-  onTodoAll = () => {
-    this.setState(({ todoData, beforeData }) => {
-      return {
-        todoData: beforeData,
-        buttonAll: true,
-        buttonActive: false,
-        buttonDone: false
-      };
+  onSearchChange = (term) => {
+    this.setState({ term });
+  };
+
+  searchTodo = (items, term) => {
+    if (term === '') {
+      return items;
+    };
+
+    return items.filter((item) => {
+      return item.label.toLowerCase().includes(term.toLowerCase());
     });
   };
 
-  onTodoActive = () => {
-    this.setState(({ beforeData }) => {
-      const itemsActive = beforeData.filter((el) => !el.done);
-      return {
-        todoData: itemsActive,
-        buttonAll: false,
-        buttonActive: true,
-        buttonDone: false
-      };
-    });
+  filter = (items, filter) => {
+    switch(filter) {
+      case 'all':
+        return items;
+      case 'active':
+        return items.filter((item) => !item.done);
+      case 'done':
+        return items.filter((item) => item.done);
+      default:
+        return items;
+    };
   };
 
-  onTodoDone = () => {
-    this.setState(({ beforeData }) => {
-      const itemsDone = beforeData.filter((el) => el.done);
-      return {
-        todoData: itemsDone,
-        buttonAll: false,
-        buttonActive: false,
-        buttonDone: true
-      };
-    });
+  onFilterChange = (filter) => {
+    this.setState({ filter });
   };
-
-  searchTodo = (item) => {
-    this.setState(({ todoData, beforeData }) => {
-      const newData = beforeData.filter((el) => {
-        return el.label.toLowerCase().includes(item)
-      }); 
-      return {
-        todoData: newData,
-      };
-    });
-  };
-
-  clear = () => {
-    this.setState(({ beforeData }) => {
-      return {
-        todoData: beforeData
-      };
-    });
-  }
 
   render() {
-    const { todoData, buttonAll, buttonActive, buttonDone, beforeData } = this.state;
-    const doneCount = beforeData
+    const { todoData, term, filter } = this.state;
+
+    const visibleItems = this.filter(
+      this.searchTodo(todoData, term), filter);
+
+    const doneCount = todoData
                         .filter((el) => el.done).length;
-    const todoCount = beforeData.length - doneCount;
+    const todoCount = todoData.length - doneCount;
 
     return (
       <div className="app">
           <AppHeader toDo={todoCount} done={doneCount} />
           <div className="app__container">
-              <SearchPanel todoData={ todoData } searchTodo={ this.searchTodo } clear={ this.clear }  />
-              <ItemStatusFilter onTodoAll={this.onTodoAll} 
-                                onTodoActive={this.onTodoActive}
-                                onTodoDone={this.onTodoDone} 
-                                buttonAll={ buttonAll }
-                                buttonActive={ buttonActive }
-                                buttonDone={ buttonDone }/>
+              <SearchPanel onSearchChange={ this.onSearchChange } term={ term }  />
+              <ItemStatusFilter filter={ filter } 
+                                onFilterChange={ this.onFilterChange }/>
           </div>
           <TodoList 
-              todos={ todoData } 
+              todos={ visibleItems } 
               onDeleted={ this.deleteItem }
               onToggleImportant={ this.onToggleImportant} 
               onToggleDone={ this.onToggleDone }/>
