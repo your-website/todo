@@ -1,0 +1,6 @@
+@import './__container/app__container.css';
+
+.app {
+    max-width: 400px;
+    margin: 0 auto;
+}

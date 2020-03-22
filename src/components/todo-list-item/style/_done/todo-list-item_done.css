@@ -1,0 +1,3 @@
+.todo-list-item.todo-list-item_done {
+    text-decoration: line-through;
+}

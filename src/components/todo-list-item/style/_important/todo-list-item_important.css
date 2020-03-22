@@ -1,0 +1,4 @@
+.todo-list-item.todo-list-item_important {
+    font-weight: bold;
+    color: steelblue;
+}

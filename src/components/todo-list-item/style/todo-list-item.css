@@ -1,0 +1,19 @@
+@import './_done/todo-list-item_done.css';
+@import './_important/todo-list-item_important.css';
+
+.todo-list-item-label {
+    margin-right: auto;
+}
+
+.todo-list-item {
+    display: flex;
+}
+
+.todo-list-item .btn {
+    width: 30px;
+    height: 30px;
+}
+
+.todo-list-item .btn:first-of-type {
+    margin-right: 5px;
+}
